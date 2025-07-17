@@ -1,4 +1,4 @@
-# Battery Data Processing and Electrochemical Analysis / 电池数据处理与电化学深入分析
+# Battery Data Processing and Electrochemical Analysis / 电池数据处理与电化学分析
 
 作者 / Author: **lunazhang**
 
