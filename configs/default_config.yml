@@ -1,0 +1,75 @@
+# Configuration for the Battery Analysis Tool
+
+# 1. Data Loading and Column Mapping
+# Maps the column names from the raw data file to the standard names used by the tool.
+# This is crucial for handling data from different sources/devices.
+columns:
+  time: 'Time'
+  voltage: 'Voltage'
+  current: 'Current'
+  temperature: 'Temperature'
+  cycle_index: 'Cycle_Index' # Optional, for cycle-based data
+
+# 2. Processing Parameters
+processing:
+  # Parameters for the outlier detection (Z-score method)
+  outlier_threshold_zscore: 3.0
+  
+  # Parameters for the low-pass filter
+  lowpass_filter:
+    cutoff_frequency: 0.1
+    sampling_frequency: 1.0 # Hz
+    filter_order: 5
+
+# 3. Analysis Parameters
+analysis:
+  # Coulombic Efficiency and Cycle Analysis
+  cycle_analysis:
+    # Set to true to enable detailed cycle analysis (including CE)
+    enabled: true
+
+  # DC Internal Resistance (DCIR) Calculation
+  dcir:
+    # Set to true to enable DCIR calculation
+    enabled: true
+    # The minimum absolute change in current (in Amperes) to trigger a DCIR calculation
+    current_change_threshold: 0.5
+
+  # Voltage threshold (in Volts) to count a cycle completion.
+  # A cycle is counted when the voltage drops below this value.
+  cycle_voltage_threshold: 3.0
+  
+  # Parameters for Incremental Capacity Analysis (ICA)
+  ica:
+    # Set to true to enable ICA calculation
+    enabled: true
+    # The voltage interval for interpolation and dQ/dV calculation. Smaller values give higher resolution.
+    voltage_step: 0.005 # in Volts
+    # Window size for the Savitzky-Golay filter. Must be an odd integer.
+    savgol_window: 21
+    # Polynomial order for the Savitzky-Golay filter.
+    savgol_polyorder: 2
+
+# 4. Machine Learning Model Parameters
+model:
+  # Specify which model to use. Currently only 'RandomForest' is supported.
+  type: 'RandomForest'
+  
+  # List of features to be used for training and prediction.
+  # These are the standard column names defined in the 'columns' section above.
+  feature_columns:
+    - 'voltage'
+    - 'current'
+    - 'temperature'
+    - 'Current_Rate' # This one is engineered, not from raw data
+    - 'mean_dcir_mohm' # Added new feature
+    - 'SOC' # new feature for models if desired
+
+  # The target variable for the model to predict.
+  target_column: 'Capacity_Ah'
+
+# 5. SOC Estimation Parameters
+soc_estimation:
+  enabled: true
+  total_capacity_ah: 2.5  # nominal capacity
+  ocv_curve_path: null  # path to csv with soc,voltage columns; null uses default curve 
